@@ -1,3 +1,4 @@
+mod commands;
 mod components;
 mod delegate;
 mod state;
@@ -6,14 +7,21 @@ mod windows;
 
 use delegate::Delegate;
 use druid::AppLauncher;
-use std::rc::Rc;
-use std::time::Instant;
 
 fn main() {
     let initial_state = state::App {
         micro_break: state::BreakTimer {
-            start_instant: Rc::new(Instant::now()),
             duration: 5,
+            progress: Default::default(),
+            time: Default::default(),
+        },
+        rest_break: state::BreakTimer {
+            duration: 60 * 45,
+            progress: Default::default(),
+            time: Default::default(),
+        },
+        notifier: state::BreakTimer {
+            duration: 10,
             progress: Default::default(),
             time: Default::default(),
         },
