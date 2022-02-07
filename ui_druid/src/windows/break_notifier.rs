@@ -15,16 +15,19 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
     return WindowDesc::new(move || build(parent_widget_id))
         .show_titlebar(false)
         .set_position((x, y))
+        .with_min_size((win_width, win_height))
         .window_size((win_width, win_height));
 }
 
 fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
     Flex::column()
         .with_child(
-            components::break_timer::build("Break", |ctx| {
-                ctx.submit_command(druid::commands::CLOSE_WINDOW)
-            })
-            .lens(state::App::notifier),
+            components::timer::build()
+                .controller(components::timer::CycleTimerController::new(move |ctx| {
+                    ctx.submit_command(druid::commands::CLOSE_WINDOW);
+                    ctx.submit_command(commands::ACCEPT_TEMP_TIMER.with(parent_widget_id));
+                }))
+                .lens(state::App::notifier),
         )
         .with_default_spacer()
         .with_child(Button::new("Postpone").on_click(move |ctx, _data, _env| {
