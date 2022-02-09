@@ -1,4 +1,5 @@
 use druid::{Data, Lens, WidgetId};
+use std::time::Duration;
 
 pub const MICRO_WORK_TIMER_WIDGET_ID: WidgetId = WidgetId::reserved(1);
 pub const REST_WORK_TIMER_WIDGET_ID: WidgetId = WidgetId::reserved(2);
@@ -40,5 +41,34 @@ impl Timer {
             progress: Default::default(),
             time: Default::default(),
         }
+    }
+
+    pub fn reset(&mut self) {
+        self.update_progress_and_time(Duration::new(0, 0))
+    }
+
+    pub fn update_progress_and_time(&mut self, elapsed: Duration) {
+        self.update_progress(elapsed);
+        self.update_time(elapsed);
+    }
+
+    fn update_progress(&mut self, elapsed: Duration) {
+        self.progress = (elapsed.as_secs_f64() / self.duration as f64).min(1.0);
+    }
+
+    fn update_time(&mut self, elapsed: Duration) {
+        let all_secs = (self.duration as i64) - (elapsed.as_secs() as i64);
+        let sign = if all_secs < 0 { "-" } else { "" };
+        let all_secs = all_secs.abs();
+
+        let mins = all_secs / 60;
+        let secs = all_secs % 60;
+        self.time = format!(
+            "{}{}:{}{}",
+            sign,
+            mins,
+            if secs < 10 { "0" } else { "" },
+            secs
+        );
     }
 }

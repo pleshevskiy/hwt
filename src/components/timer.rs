@@ -48,13 +48,12 @@ where
             Event::WindowConnected => {
                 self.start_time = Instant::now();
                 self.interval_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                data.progress = calculate_progress(Duration::new(0, 0), data.duration);
-                data.time = create_time_string(Duration::new(0, 0), data.duration);
+                data.reset();
+                child.event(ctx, event, data, env);
             }
             Event::Timer(id) if *id == self.interval_timer_id => {
                 let elapsed = self.start_time.elapsed();
-                data.progress = calculate_progress(elapsed, data.duration);
-                data.time = create_time_string(elapsed, data.duration);
+                data.update_progress_and_time(elapsed);
                 ctx.request_paint();
                 self.interval_timer_id = ctx.request_timer(TIMER_INTERVAL);
             }
@@ -74,33 +73,12 @@ where
             {
                 self.start_time = Instant::now();
                 self.interval_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                data.progress = calculate_progress(Duration::new(0, 0), data.duration);
-                data.time = create_time_string(Duration::new(0, 0), data.duration);
+                data.reset();
                 ctx.request_paint();
             }
             _ => child.event(ctx, event, data, env),
         }
     }
-}
-
-fn calculate_progress(elapsed: Duration, duration: u32) -> f64 {
-    (elapsed.as_secs_f64() / duration as f64).min(1.0)
-}
-
-fn create_time_string(elapsed: Duration, duration: u32) -> String {
-    let all_secs = (duration as i64) - (elapsed.as_secs() as i64);
-    let sign = if all_secs < 0 { "-" } else { "" };
-    let all_secs = all_secs.abs();
-
-    let mins = all_secs / 60;
-    let secs = all_secs % 60;
-    format!(
-        "{}{}:{}{}",
-        sign,
-        mins,
-        if secs < 10 { "0" } else { "" },
-        secs
-    )
 }
 
 pub struct CycleTimerController {
