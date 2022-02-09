@@ -82,14 +82,12 @@ where
 }
 
 pub struct CycleTimerController {
-    timer_widget_id: WidgetId,
     cycle_timer_id: TimerToken,
 }
 
 impl CycleTimerController {
-    pub fn new(timer_widget_id: WidgetId) -> Self {
+    pub fn new() -> Self {
         Self {
-            timer_widget_id,
             cycle_timer_id: TimerToken::INVALID,
         }
     }
@@ -115,7 +113,7 @@ where
             Event::Timer(id) if *id == self.cycle_timer_id => {
                 self.cycle_timer_id = ctx.request_timer(Duration::from_secs(data.duration.into()));
 
-                ctx.submit_command(commands::RESTART_TIMER_COMPONENT.with(self.timer_widget_id))
+                ctx.submit_command(commands::RESTART_TIMER_COMPONENT.with(ctx.widget_id()))
             }
             _ => child.event(ctx, event, data, env),
         };

@@ -1,8 +1,5 @@
-use druid::{Data, Lens, WidgetId};
+use druid::{Data, Lens};
 use std::time::Duration;
-
-pub const MICRO_WORK_TIMER_WIDGET_ID: WidgetId = WidgetId::reserved(1);
-pub const REST_WORK_TIMER_WIDGET_ID: WidgetId = WidgetId::reserved(2);
 
 #[derive(Clone, Data, Lens)]
 pub struct App {

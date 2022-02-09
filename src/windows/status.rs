@@ -16,15 +16,9 @@ pub fn create() -> WindowDesc<state::App> {
 fn build() -> impl Widget<state::App> {
     Flex::column()
         .cross_axis_alignment(CrossAxisAlignment::Start)
-        .with_child(
-            components::break_timer::build("Micro", state::MICRO_WORK_TIMER_WIDGET_ID)
-                .lens(state::App::micro_break),
-        )
+        .with_child(components::break_timer::build("Micro").lens(state::App::micro_break))
         .with_default_spacer()
-        .with_child(
-            components::break_timer::build("Rest", state::REST_WORK_TIMER_WIDGET_ID)
-                .lens(state::App::rest_break),
-        )
+        .with_child(components::break_timer::build("Rest").lens(state::App::rest_break))
         .with_default_spacer()
         .with_child(Either::new(
             |data: &state::App, _env| data.paused,
