@@ -57,11 +57,11 @@ where
                 ctx.request_paint();
                 self.interval_timer_id = ctx.request_timer(TIMER_INTERVAL);
             }
-            Event::Command(cmd) if cmd.is(commands::PAUSE_TIMER_COMPONENT) => {
+            Event::Command(cmd) if cmd.is(commands::PAUSE_ALL_TIMER_COMPONENT) => {
                 self.pause_time = Some(Instant::now());
                 self.interval_timer_id = TimerToken::INVALID;
             }
-            Event::Command(cmd) if cmd.is(commands::UNPAUSE_TIMER_COMPONENT) => {
+            Event::Command(cmd) if cmd.is(commands::UNPAUSE_ALL_TIMER_COMPONENT) => {
                 if let Some(instant) = self.pause_time.take() {
                     self.start_time += instant.elapsed();
                     self.interval_timer_id = ctx.request_timer(TIMER_INTERVAL);
@@ -110,14 +110,14 @@ where
         match event {
             Event::WindowConnected => {
                 self.cycle_timer_id = ctx.request_timer(Duration::from_secs(data.duration.into()));
+                child.event(ctx, event, data, env);
             }
             Event::Timer(id) if *id == self.cycle_timer_id => {
                 self.cycle_timer_id = ctx.request_timer(Duration::from_secs(data.duration.into()));
 
                 ctx.submit_command(commands::RESTART_TIMER_COMPONENT.with(self.timer_widget_id))
             }
-            _ => {}
+            _ => child.event(ctx, event, data, env),
         };
-        child.event(ctx, event, data, env);
     }
 }

@@ -30,11 +30,11 @@ fn build() -> impl Widget<state::App> {
             |data: &state::App, _env| data.paused,
             Button::new("Unpause").on_click(|ctx, data: &mut state::App, _env| {
                 data.paused = false;
-                ctx.submit_command(commands::UNPAUSE_TIMER_COMPONENT)
+                ctx.submit_command(commands::UNPAUSE_ALL_TIMER_COMPONENT)
             }),
             Button::new("Pause").on_click(|ctx, data: &mut state::App, _env| {
                 data.paused = true;
-                ctx.submit_command(commands::PAUSE_TIMER_COMPONENT)
+                ctx.submit_command(commands::PAUSE_ALL_TIMER_COMPONENT)
             }),
         ))
         .padding((8.0, 8.0))
