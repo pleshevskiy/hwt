@@ -9,13 +9,10 @@ use druid::AppLauncher;
 
 fn main() {
     let initial_state = state::App {
-        micro_break: state::BreakTimer {
-            timer: state::Timer::multiple(vec![60 * 5, 30]),
-        },
-        rest_break: state::BreakTimer {
-            timer: state::Timer::single(60 * 45),
-        },
-        notifier: state::Timer::single(10),
+        paused: false,
+        micro_break: state::BreakTimer::new(5, 30),
+        rest_break: state::BreakTimer::new(60 * 45, 30),
+        notifier: state::Timer::new(10),
     };
 
     AppLauncher::with_window(windows::status::create())

@@ -21,14 +21,7 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
 
 fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
     Flex::column()
-        .with_child(
-            components::timer::build()
-                .controller(components::timer::CycleTimerController::new(move |ctx| {
-                    ctx.submit_command(druid::commands::CLOSE_WINDOW);
-                    ctx.submit_command(commands::ACCEPT_TEMP_TIMER.with(parent_widget_id));
-                }))
-                .lens(state::App::notifier),
-        )
+        .with_child(components::timer::build().lens(state::App::notifier))
         .with_default_spacer()
         .with_child(Button::new("Postpone").on_click(move |ctx, _data, _env| {
             ctx.submit_command(commands::POSTPONE_BREAK.with(parent_widget_id));
