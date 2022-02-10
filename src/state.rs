@@ -1,4 +1,5 @@
 use druid::{Data, Lens};
+use std::ops::Div;
 use std::time::Duration;
 
 #[derive(Clone, Data, Lens)]
@@ -12,60 +13,61 @@ pub struct App {
 #[derive(Clone, Data, Lens)]
 pub struct BreakTimer {
     pub work_timer: Timer,
-    pub wait_timer: Timer,
 }
 
 impl BreakTimer {
-    pub fn new(work_duration: u32, wait_duration: u32) -> Self {
+    pub fn new() -> Self {
         Self {
-            work_timer: Timer::new(work_duration),
-            wait_timer: Timer::new(wait_duration),
+            work_timer: Timer::new(),
         }
     }
 }
 
 #[derive(Clone, Data, Lens)]
 pub struct Timer {
-    pub duration: u32,
     pub progress: f64,
     pub time: String,
 }
 
 impl Timer {
-    pub fn new(duration: u32) -> Self {
+    pub fn new() -> Self {
         Self {
-            duration,
             progress: Default::default(),
             time: Default::default(),
         }
     }
 
-    pub fn reset(&mut self) {
-        self.update_progress_and_time(Duration::new(0, 0))
+    pub fn reset(&mut self, duration: Duration) {
+        self.update_progress_and_time(Duration::ZERO, duration, duration)
     }
 
-    pub fn update_progress_and_time(&mut self, elapsed: Duration) {
-        self.update_progress(elapsed);
-        self.update_time(elapsed);
+    pub fn update_progress_and_time(
+        &mut self,
+        elapsed: Duration,
+        duration: Duration,
+        full_duration: Duration,
+    ) {
+        self.update_progress(elapsed, full_duration);
+        self.update_time(elapsed, duration);
     }
 
-    fn update_progress(&mut self, elapsed: Duration) {
-        self.progress = (elapsed.as_secs_f64() / self.duration as f64).min(1.0);
+    fn update_progress(&mut self, elapsed: Duration, duration: Duration) {
+        self.progress = elapsed.as_secs_f64().div(duration.as_secs_f64()).min(1.0);
     }
 
-    fn update_time(&mut self, elapsed: Duration) {
-        let all_secs = (self.duration as i64) - (elapsed.as_secs() as i64);
-        let sign = if all_secs < 0 { "-" } else { "" };
+    fn update_time(&mut self, elapsed: Duration, duration: Duration) {
+        let all_secs = duration.as_secs_f64() - elapsed.as_secs_f64();
+        let sign = if all_secs < 0.0 { "-" } else { "" };
         let all_secs = all_secs.abs();
 
-        let mins = all_secs / 60;
-        let secs = all_secs % 60;
+        let mins = all_secs / 60.0;
+        let secs = all_secs % 60.0;
         self.time = format!(
             "{}{}:{}{}",
             sign,
-            mins,
-            if secs < 10 { "0" } else { "" },
-            secs
+            mins as i32,
+            if secs < 10.0 { "0" } else { "" },
+            secs as u32
         );
     }
 }

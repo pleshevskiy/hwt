@@ -1,8 +1,9 @@
 use crate::commands;
 use crate::components;
+use crate::env;
 use crate::state;
 use druid::widget::{Button, Flex};
-use druid::{Widget, WidgetExt, WidgetId, WindowDesc};
+use druid::{MenuDesc, Target, Widget, WidgetExt, WidgetId, WindowDesc};
 
 pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
     let win_width = 200.0;
@@ -14,6 +15,7 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
 
     return WindowDesc::new(move || build(parent_widget_id))
         .show_titlebar(false)
+        .menu(MenuDesc::empty())
         .set_position((x, y))
         .with_min_size((win_width, win_height))
         .window_size((win_width, win_height));
@@ -21,7 +23,23 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
 
 fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
     Flex::column()
-        .with_child(components::timer::build().lens(state::App::notifier))
+        .with_child(
+            components::timer::build()
+                .controller(components::timer::TimerController::new(move |ctx| {
+                    ctx.submit_command(commands::UNPAUSE_ALL_TIMER_COMPONENT.to(Target::Global));
+                    ctx.submit_command(
+                        commands::RESTART_TIMER_COMPONENT.to(Target::Widget(parent_widget_id)),
+                    );
+                    ctx.submit_command(druid::commands::CLOSE_WINDOW);
+                }))
+                .env_scope(move |env, _| {
+                    env.set(
+                        env::TIMER_DURATION,
+                        env.get(env::BREAK_NOTIFIER_TIMER_DURATION),
+                    );
+                })
+                .lens(state::App::notifier),
+        )
         .with_default_spacer()
         .with_child(Button::new("Postpone").on_click(move |ctx, _data, _env| {
             ctx.submit_command(commands::POSTPONE_BREAK.with(parent_widget_id));

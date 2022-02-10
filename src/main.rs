@@ -1,6 +1,7 @@
 mod commands;
 mod components;
 mod delegate;
+mod env;
 mod state;
 mod windows;
 
@@ -10,14 +11,15 @@ use druid::AppLauncher;
 fn main() {
     let initial_state = state::App {
         paused: false,
-        micro_break: state::BreakTimer::new(5, 30),
-        rest_break: state::BreakTimer::new(60 * 45, 30),
-        notifier: state::Timer::new(10),
+        micro_break: state::BreakTimer::new(),
+        rest_break: state::BreakTimer::new(),
+        notifier: state::Timer::new(),
     };
 
     AppLauncher::with_window(windows::status::create())
         .use_simple_logger()
         .delegate(Delegate)
+        .configure_env(env::configure)
         .launch(initial_state)
         .expect("Failed to launch application");
 }
