@@ -1,5 +1,5 @@
-use crate::commands;
-use crate::components;
+use crate::cmd;
+use crate::comp;
 use crate::env;
 use crate::state;
 use druid::widget::{Button, Flex};
@@ -24,11 +24,11 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
 fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
     Flex::column()
         .with_child(
-            components::timer::build()
-                .controller(components::timer::TimerController::new(move |ctx| {
-                    ctx.submit_command(commands::UNPAUSE_ALL_TIMER_COMPONENT.to(Target::Global));
+            comp::timer::build()
+                .controller(comp::timer::TimerController::new(move |ctx| {
+                    ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.to(Target::Global));
                     ctx.submit_command(
-                        commands::RESTART_TIMER_COMPONENT.to(Target::Widget(parent_widget_id)),
+                        cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)),
                     );
                     ctx.submit_command(druid::commands::CLOSE_WINDOW);
                 }))
@@ -42,7 +42,7 @@ fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
         )
         .with_default_spacer()
         .with_child(Button::new("Postpone").on_click(move |ctx, _data, _env| {
-            ctx.submit_command(commands::POSTPONE_BREAK.with(parent_widget_id));
+            ctx.submit_command(cmd::POSTPONE_BREAK.with(parent_widget_id));
             ctx.submit_command(druid::commands::CLOSE_WINDOW);
         }))
         .padding((8.0, 8.0))

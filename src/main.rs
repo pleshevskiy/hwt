@@ -1,9 +1,9 @@
-mod commands;
-mod components;
+mod cmd;
+mod comp;
 mod delegate;
 mod env;
 mod state;
-mod windows;
+mod win;
 
 use delegate::Delegate;
 use druid::AppLauncher;
@@ -16,7 +16,7 @@ fn main() {
         notifier: state::Timer::new(),
     };
 
-    AppLauncher::with_window(windows::status::create())
+    AppLauncher::with_window(win::status::create())
         .use_simple_logger()
         .delegate(Delegate)
         .configure_env(env::configure)

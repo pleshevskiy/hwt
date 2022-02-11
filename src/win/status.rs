@@ -1,5 +1,5 @@
-use crate::commands;
-use crate::components;
+use crate::cmd;
+use crate::comp;
 use crate::env;
 use crate::state;
 use druid::widget::{Button, CrossAxisAlignment, Either, Flex};
@@ -19,7 +19,7 @@ fn build() -> impl Widget<state::App> {
     Flex::column()
         .cross_axis_alignment(CrossAxisAlignment::Start)
         .with_child(
-            components::break_timer::build(
+            comp::break_timer::build(
                 "Micro",
                 env::MICRO_BREAK_TIMER_DURATION,
                 env::MICRO_BREAK_TIMER_POSTPONE_DURATION,
@@ -28,7 +28,7 @@ fn build() -> impl Widget<state::App> {
         )
         .with_default_spacer()
         .with_child(
-            components::break_timer::build(
+            comp::break_timer::build(
                 "Rest",
                 env::REST_BREAK_TIMER_DURATION,
                 env::REST_BREAK_TIMER_POSTPONE_DURATION,
@@ -40,11 +40,11 @@ fn build() -> impl Widget<state::App> {
             |data: &state::App, _env| data.paused,
             Button::new("Unpause").on_click(|ctx, data: &mut state::App, _env| {
                 data.paused = false;
-                ctx.submit_command(commands::UNPAUSE_ALL_TIMER_COMPONENT)
+                ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP)
             }),
             Button::new("Pause").on_click(|ctx, data: &mut state::App, _env| {
                 data.paused = true;
-                ctx.submit_command(commands::PAUSE_ALL_TIMER_COMPONENT)
+                ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP)
             }),
         ))
         .padding((8.0, 8.0))

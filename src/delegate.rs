@@ -1,6 +1,6 @@
-use crate::commands;
+use crate::cmd;
 use crate::state;
-use crate::windows;
+use crate::win;
 use druid::{AppDelegate, Command, DelegateCtx, Env, Handled, Target, WindowId};
 use log::info;
 
@@ -15,9 +15,9 @@ impl AppDelegate<state::App> for Delegate {
         _data: &mut state::App,
         _env: &Env,
     ) -> Handled {
-        if cmd.is(commands::OPEN_BREAK_WINDOW) {
-            let widget_id = *cmd.get_unchecked(commands::OPEN_BREAK_WINDOW);
-            ctx.new_window(windows::break_notifier::create(widget_id));
+        if cmd.is(cmd::OPEN_BREAK_WINDOW) {
+            let widget_id = *cmd.get_unchecked(cmd::OPEN_BREAK_WINDOW);
+            ctx.new_window(win::break_notifier::create(widget_id));
             Handled::Yes
         } else {
             Handled::No

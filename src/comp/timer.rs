@@ -1,4 +1,4 @@
-use crate::commands;
+use crate::cmd;
 use crate::env;
 use crate::state;
 use druid::widget::{Controller, Flex, Label, ProgressBar};
@@ -66,7 +66,7 @@ where
             Event::WindowConnected => {
                 self.start_time = Instant::now();
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                self.finish_timer_id = ctx.request_timer(duration + TIMER_INTERVAL);
+                self.finish_timer_id = ctx.request_timer(duration);
                 data.reset(duration);
                 child.event(ctx, event, data, env);
             }
@@ -81,12 +81,12 @@ where
                     finish_handler(ctx);
                 }
             }
-            Event::Command(cmd) if cmd.is(commands::PAUSE_ALL_TIMER_COMPONENT) => {
+            Event::Command(cmd) if cmd.is(cmd::PAUSE_ALL_TIMER_COMP) => {
                 self.pause_time = Some(Instant::now());
                 self.render_timer_id = TimerToken::INVALID;
                 self.finish_timer_id = TimerToken::INVALID;
             }
-            Event::Command(cmd) if cmd.is(commands::UNPAUSE_ALL_TIMER_COMPONENT) => {
+            Event::Command(cmd) if cmd.is(cmd::UNPAUSE_ALL_TIMER_COMP) => {
                 if let Some(pause_instant) = self.pause_time.take() {
                     self.start_time += pause_instant.elapsed();
                     self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
@@ -97,12 +97,16 @@ where
                     );
                 }
             }
-            Event::Command(cmd) if cmd.is(commands::RESTART_TIMER_COMPONENT) => {
+            Event::Command(cmd) if cmd.is(cmd::RESTART_TIMER_COMP) => {
                 self.start_time = Instant::now();
+                self.postpone_times = 0;
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                self.finish_timer_id = ctx.request_timer(duration + TIMER_INTERVAL);
+                self.finish_timer_id = ctx.request_timer(duration);
                 data.reset(duration);
                 ctx.request_paint();
+            }
+            Event::Command(cmd) if cmd.is(cmd::POSTPONE_ALL_TIMER_COMP) => {
+                self.postpone_times += 1;
             }
             _ => child.event(ctx, event, data, env),
         }
@@ -117,7 +121,10 @@ impl TimerController {
     fn postpone_duration(&self, env: &Env) -> Duration {
         match self.postpone_times {
             0 => Duration::ZERO,
-            _ => Duration::from_secs_f64(env.get(env::TIMER_POSTPONE_DURATION)),
+            _ => Duration::from_secs_f64(
+                env.try_get(env::TIMER_POSTPONE_DURATION)
+                    .unwrap_or_default(),
+            ),
         }
     }
 
