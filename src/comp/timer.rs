@@ -21,6 +21,7 @@ pub struct TimerController {
     finish_timer_id: TimerToken,
     finish_handler: Option<Box<dyn Fn(&mut EventCtx)>>,
     postpone_times: u32,
+    deinit: bool,
 }
 
 impl TimerController {
@@ -42,8 +43,9 @@ impl Default for TimerController {
             pause_time: None,
             render_timer_id: TimerToken::INVALID,
             finish_timer_id: TimerToken::INVALID,
-            finish_handler: Default::default(),
-            postpone_times: Default::default(),
+            finish_handler: None,
+            postpone_times: 0,
+            deinit: false,
         }
     }
 }
@@ -60,9 +62,14 @@ where
         data: &mut state::Timer,
         env: &Env,
     ) {
+        if self.deinit {
+            return child.event(ctx, event, data, env);
+        }
+
         let duration = self.duration(env);
         let full_duration = self.full_duration(env);
         match event {
+            Event::Command(cmd) if cmd.is(cmd::DEINIT_COMP) => self.deinit = true,
             Event::WindowConnected => {
                 self.start_time = Instant::now();
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
@@ -87,15 +94,25 @@ where
                 self.finish_timer_id = TimerToken::INVALID;
             }
             Event::Command(cmd) if cmd.is(cmd::UNPAUSE_ALL_TIMER_COMP) => {
-                if let Some(pause_instant) = self.pause_time.take() {
-                    self.start_time += pause_instant.elapsed();
-                    self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                    self.finish_timer_id = ctx.request_timer(
-                        duration.saturating_sub(
+                let skip_pause = cmd.get_unchecked(cmd::UNPAUSE_ALL_TIMER_COMP);
+                self.finish_timer_id =
+                    if let (false, Some(pause_instant)) = (skip_pause, self.pause_time.take()) {
+                        self.start_time += pause_instant.elapsed();
+                        ctx.request_timer(duration.saturating_sub(
                             Instant::now().saturating_duration_since(self.start_time),
-                        ) + TIMER_INTERVAL,
-                    );
-                }
+                        ))
+                    } else if self.postpone_times > 0 {
+                        ctx.request_timer(self.postpone_duration(env).saturating_sub(
+                            Instant::now().saturating_duration_since(
+                                self.start_time + self.full_duration(env)
+                                    - self.postpone_duration(env),
+                            ),
+                        ))
+                    } else {
+                        ctx.request_timer(self.duration(env))
+                    };
+
+                self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
             }
             Event::Command(cmd) if cmd.is(cmd::RESTART_TIMER_COMP) => {
                 self.start_time = Instant::now();
@@ -105,7 +122,7 @@ where
                 data.reset(duration);
                 ctx.request_paint();
             }
-            Event::Command(cmd) if cmd.is(cmd::POSTPONE_ALL_TIMER_COMP) => {
+            Event::Command(cmd) if cmd.is(cmd::POSTPONE_TIMER_COMP) => {
                 self.postpone_times += 1;
             }
             _ => child.event(ctx, event, data, env),

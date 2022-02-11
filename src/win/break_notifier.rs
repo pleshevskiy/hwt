@@ -23,27 +23,32 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
 
 fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
     Flex::column()
-        .with_child(
-            comp::timer::build()
-                .controller(comp::timer::TimerController::new(move |ctx| {
-                    ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.to(Target::Global));
-                    ctx.submit_command(
-                        cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)),
-                    );
-                    ctx.submit_command(druid::commands::CLOSE_WINDOW);
-                }))
-                .env_scope(move |env, _| {
-                    env.set(
-                        env::TIMER_DURATION,
-                        env.get(env::BREAK_NOTIFIER_TIMER_DURATION),
-                    );
-                })
-                .lens(state::App::notifier),
-        )
+        .with_child(build_notifier_timer(parent_widget_id).lens(state::App::notifier))
         .with_default_spacer()
-        .with_child(Button::new("Postpone").on_click(move |ctx, _data, _env| {
-            ctx.submit_command(cmd::POSTPONE_BREAK.with(parent_widget_id));
+        .with_child(build_postpone_btn(parent_widget_id))
+        .padding((8.0, 8.0))
+}
+
+fn build_notifier_timer(parent_widget_id: WidgetId) -> impl Widget<state::Timer> {
+    comp::timer::build()
+        .controller(comp::timer::TimerController::new(move |ctx| {
+            ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
+            ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
+            ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
             ctx.submit_command(druid::commands::CLOSE_WINDOW);
         }))
-        .padding((8.0, 8.0))
+        .env_scope(move |env, _| {
+            env.set(
+                env::TIMER_DURATION,
+                env.get(env::BREAK_NOTIFIER_TIMER_DURATION),
+            );
+        })
+}
+
+fn build_postpone_btn<D: druid::Data>(parent_widget_id: WidgetId) -> impl Widget<D> {
+    Button::new("Postpone").on_click(move |ctx, _data, _env| {
+        ctx.submit_command(cmd::POSTPONE_TIMER_COMP.to(Target::Widget(parent_widget_id)));
+        ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(true).to(Target::Global));
+        ctx.submit_command(druid::commands::CLOSE_WINDOW);
+    })
 }

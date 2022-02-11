@@ -40,7 +40,7 @@ fn build() -> impl Widget<state::App> {
             |data: &state::App, _env| data.paused,
             Button::new("Unpause").on_click(|ctx, data: &mut state::App, _env| {
                 data.paused = false;
-                ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP)
+                ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false))
             }),
             Button::new("Pause").on_click(|ctx, data: &mut state::App, _env| {
                 data.paused = true;

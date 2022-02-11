@@ -17,7 +17,7 @@ pub fn configure(env: &mut Env, _data: &state::App) {
     // log::info!("Env: {:?}", env.get_all().collect::<Vec<_>>());
 
     env.set(MICRO_BREAK_TIMER_DURATION, 5.0);
-    env.set(MICRO_BREAK_TIMER_POSTPONE_DURATION, 2.5);
+    env.set(MICRO_BREAK_TIMER_POSTPONE_DURATION, 5.0);
 
     log::info!("{}", env.get(MICRO_BREAK_TIMER_DURATION));
 
