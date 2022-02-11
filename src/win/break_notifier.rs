@@ -37,6 +37,7 @@ fn build_notifier_timer(parent_widget_id: WidgetId) -> impl Widget<state::Timer>
             ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
             ctx.submit_command(druid::commands::CLOSE_WINDOW);
         }))
+        .controller(comp::deinit::DeinitController::default())
         .env_scope(move |env, _| {
             env.set(
                 env::TIMER_DURATION,

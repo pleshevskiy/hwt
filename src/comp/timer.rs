@@ -5,7 +5,7 @@ use druid::widget::{Controller, Flex, Label, ProgressBar};
 use druid::{Env, Event, EventCtx, Key, TimerToken, Widget, WidgetExt};
 use std::time::{Duration, Instant};
 
-const TIMER_INTERVAL: Duration = Duration::from_millis(100);
+const TIMER_INTERVAL: Duration = Duration::from_millis(50);
 
 pub fn build() -> impl Widget<state::Timer> {
     let time_label = Label::dynamic(|data: &String, _: &Env| data.clone()).lens(state::Timer::time);
@@ -21,7 +21,6 @@ pub struct TimerController {
     finish_timer_id: TimerToken,
     finish_handler: Option<Box<dyn Fn(&mut EventCtx)>>,
     postpone_times: u32,
-    deinit: bool,
 }
 
 impl TimerController {
@@ -45,7 +44,6 @@ impl Default for TimerController {
             finish_timer_id: TimerToken::INVALID,
             finish_handler: None,
             postpone_times: 0,
-            deinit: false,
         }
     }
 }
@@ -62,14 +60,9 @@ where
         data: &mut state::Timer,
         env: &Env,
     ) {
-        if self.deinit {
-            return child.event(ctx, event, data, env);
-        }
-
         let duration = self.duration(env);
         let full_duration = self.full_duration(env);
         match event {
-            Event::Command(cmd) if cmd.is(cmd::DEINIT_COMP) => self.deinit = true,
             Event::WindowConnected => {
                 self.start_time = Instant::now();
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
@@ -102,10 +95,10 @@ where
                             Instant::now().saturating_duration_since(self.start_time),
                         ))
                     } else if self.postpone_times > 0 {
-                        ctx.request_timer(self.postpone_duration(env).saturating_sub(
+                        let postpone_duration = self.postpone_duration(env);
+                        ctx.request_timer(postpone_duration.saturating_sub(
                             Instant::now().saturating_duration_since(
-                                self.start_time + self.full_duration(env)
-                                    - self.postpone_duration(env),
+                                self.start_time + full_duration - postpone_duration,
                             ),
                         ))
                     } else {
@@ -138,10 +131,7 @@ impl TimerController {
     fn postpone_duration(&self, env: &Env) -> Duration {
         match self.postpone_times {
             0 => Duration::ZERO,
-            _ => Duration::from_secs_f64(
-                env.try_get(env::TIMER_POSTPONE_DURATION)
-                    .unwrap_or_default(),
-            ),
+            _ => Duration::from_secs_f64(env.get(env::TIMER_POSTPONE_DURATION)),
         }
     }
 
