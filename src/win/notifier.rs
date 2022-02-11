@@ -33,8 +33,11 @@ fn build_notifier_timer(parent_widget_id: WidgetId) -> impl Widget<state::Timer>
     comp::timer::build()
         .controller(comp::timer::TimerController::new(move |ctx| {
             ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
-            ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
-            ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
+            ctx.submit_command(
+                cmd::OPEN_IDLE_WINDOW
+                    .with((parent_widget_id, 30.0))
+                    .to(Target::Global),
+            );
             ctx.submit_command(druid::commands::CLOSE_WINDOW);
         }))
         .controller(comp::deinit::DeinitController::default())

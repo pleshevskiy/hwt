@@ -15,7 +15,7 @@ pub fn build(
         comp::timer::build()
             .controller(comp::timer::TimerController::new(|ctx| {
                 ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP);
-                ctx.submit_command(cmd::OPEN_BREAK_WINDOW.with(ctx.widget_id()))
+                ctx.submit_command(cmd::OPEN_NOTIFIER_WINDOW.with(ctx.widget_id()))
             }))
             .env_scope(move |env, _| {
                 env.set(env::TIMER_DURATION, env.get(duration_env_key.clone()));

@@ -15,12 +15,18 @@ impl AppDelegate<state::App> for Delegate {
         _data: &mut state::App,
         _env: &Env,
     ) -> Handled {
-        if cmd.is(cmd::OPEN_BREAK_WINDOW) {
-            let widget_id = *cmd.get_unchecked(cmd::OPEN_BREAK_WINDOW);
-            ctx.new_window(win::break_notifier::create(widget_id));
-            Handled::Yes
-        } else {
-            Handled::No
+        match cmd {
+            _ if cmd.is(cmd::OPEN_NOTIFIER_WINDOW) => {
+                let widget_id = *cmd.get_unchecked(cmd::OPEN_NOTIFIER_WINDOW);
+                ctx.new_window(win::notifier::create(widget_id));
+                Handled::Yes
+            }
+            _ if cmd.is(cmd::OPEN_IDLE_WINDOW) => {
+                let (widget_id, wait_duration) = *cmd.get_unchecked(cmd::OPEN_IDLE_WINDOW);
+                ctx.new_window(win::idle::create(widget_id, wait_duration));
+                Handled::Yes
+            }
+            _ => Handled::No,
         }
     }
 
