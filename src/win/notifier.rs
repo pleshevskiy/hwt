@@ -2,7 +2,7 @@ use crate::cmd;
 use crate::comp;
 use crate::env;
 use crate::state;
-use druid::widget::{Button, Flex};
+use druid::widget::Button;
 use druid::{MenuDesc, Target, Widget, WidgetExt, WidgetId, WindowDesc};
 
 pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc<state::App> {
@@ -22,7 +22,7 @@ pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc
 }
 
 fn build(parent_widget_id: WidgetId, rest_duration_secs: f64) -> impl Widget<state::App> {
-    Flex::column()
+    comp::flex::col_cen_cen()
         .with_child(
             build_notifier_timer(parent_widget_id, rest_duration_secs).lens(state::App::notifier),
         )

@@ -2,11 +2,11 @@ use crate::cmd;
 use crate::comp;
 use crate::env;
 use crate::state;
-use druid::widget::{Button, CrossAxisAlignment, Either, Flex};
+use druid::widget::{Button, Either};
 use druid::{LocalizedString, MenuDesc, Widget, WidgetExt, WindowDesc};
 
 pub fn create() -> WindowDesc<state::App> {
-    let win_width = 200.0;
+    let win_width = 220.0;
     let win_height = 100.0;
     return WindowDesc::new(build)
         .title(LocalizedString::new("HWT Status"))
@@ -16,8 +16,7 @@ pub fn create() -> WindowDesc<state::App> {
 }
 
 fn build() -> impl Widget<state::App> {
-    Flex::column()
-        .cross_axis_alignment(CrossAxisAlignment::Start)
+    comp::flex::col_sta_sta()
         .with_child(build_timers())
         .with_default_spacer()
         .with_child(build_pause_btn())
@@ -25,7 +24,7 @@ fn build() -> impl Widget<state::App> {
 }
 
 fn build_timers() -> impl Widget<state::App> {
-    Flex::column()
+    comp::flex::col_sta_sta()
         .with_child(
             comp::break_timer::build(
                 "Micro",

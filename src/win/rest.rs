@@ -2,7 +2,7 @@ use crate::cmd;
 use crate::comp;
 use crate::env;
 use crate::state;
-use druid::widget::{Flex, MainAxisAlignment};
+use druid::widget::Button;
 use druid::{MenuDesc, Target, Widget, WidgetExt, WidgetId, WindowDesc};
 
 pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc<state::App> {
@@ -22,10 +22,15 @@ pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc
 }
 
 fn build(parent_widget_id: WidgetId, rest_duration_secs: f64) -> impl Widget<state::App> {
-    Flex::column()
-        .main_axis_alignment(MainAxisAlignment::Center)
+    comp::flex::col_cen_cen()
         .with_child(
-            build_idle_timer(parent_widget_id, rest_duration_secs).lens(state::App::notifier),
+            comp::flex::col_sta_end()
+                .with_child(
+                    build_idle_timer(parent_widget_id, rest_duration_secs)
+                        .lens(state::App::notifier),
+                )
+                .with_default_spacer()
+                .with_child(build_finish_btn(parent_widget_id)),
         )
         .padding((8.0, 8.0))
 }
@@ -46,4 +51,12 @@ fn build_idle_timer(
             .with_init_duration(env::BREAK_NOTIFIER_TIMER_DURATION),
         )
         .controller(comp::deinit::DeinitController::default())
+}
+
+fn build_finish_btn(parent_widget_id: WidgetId) -> impl Widget<state::App> {
+    Button::new("Finish the rest").on_click(move |ctx, _data, _env| {
+        ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
+        ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
+        ctx.submit_command(druid::commands::CLOSE_WINDOW);
+    })
 }

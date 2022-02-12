@@ -36,7 +36,7 @@ pub fn configure(env: &mut Env, _data: &state::App) {
 
     // timers
     env.set(MICRO_BREAK_TIMER_DURATION, 10.0);
-    env.set(MICRO_BREAK_TIMER_POSTPONE_DURATION, 10.0);
+    env.set(MICRO_BREAK_TIMER_POSTPONE_DURATION, 5.0);
     env.set(MICRO_BREAK_TIMER_REST_DURATION, 30.0);
 
     env.set(REST_BREAK_TIMER_DURATION, mins(45.0));

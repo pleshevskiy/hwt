@@ -1,7 +1,8 @@
 use crate::cmd;
+use crate::comp;
 use crate::env;
 use crate::state;
-use druid::widget::{Controller, Flex, Label, ProgressBar};
+use druid::widget::{Controller, Label, ProgressBar};
 use druid::{Env, Event, EventCtx, KeyOrValue, TimerToken, Widget, WidgetExt};
 use std::time::{Duration, Instant};
 
@@ -11,7 +12,9 @@ pub fn build() -> impl Widget<state::Timer> {
     let time_label = Label::dynamic(|data: &String, _: &Env| data.clone()).lens(state::Timer::time);
     let progress_bar = ProgressBar::new().lens(state::Timer::progress);
 
-    Flex::row().with_child(time_label).with_child(progress_bar)
+    comp::flex::row_sta_sta()
+        .with_child(time_label)
+        .with_child(progress_bar)
 }
 
 pub struct TimerController {
