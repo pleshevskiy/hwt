@@ -36,5 +36,11 @@ fn build_idle_timer(parent_widget_id: WidgetId, wait_duration: f64) -> impl Widg
             ctx.submit_command(druid::commands::CLOSE_WINDOW);
         }))
         .controller(comp::deinit::DeinitController::default())
-        .env_scope(move |env, _| env.set(env::TIMER_DURATION, wait_duration))
+        .env_scope(move |env, _| {
+            env.set(
+                env::TIMER_INIT_DURATION,
+                env.get(env::BREAK_NOTIFIER_TIMER_DURATION),
+            );
+            env.set(env::TIMER_DURATION, wait_duration)
+        })
 }
