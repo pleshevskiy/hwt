@@ -18,6 +18,14 @@ pub fn create() -> WindowDesc<state::App> {
 fn build() -> impl Widget<state::App> {
     Flex::column()
         .cross_axis_alignment(CrossAxisAlignment::Start)
+        .with_child(build_timers())
+        .with_default_spacer()
+        .with_child(build_pause_btn())
+        .padding((8.0, 8.0))
+}
+
+fn build_timers() -> impl Widget<state::App> {
+    Flex::column()
         .with_child(
             comp::break_timer::build(
                 "Micro",
@@ -37,17 +45,18 @@ fn build() -> impl Widget<state::App> {
             )
             .lens(state::App::rest_break),
         )
-        .with_default_spacer()
-        .with_child(Either::new(
-            |data: &state::App, _env| data.paused,
-            Button::new("Unpause").on_click(|ctx, data: &mut state::App, _env| {
-                data.paused = false;
-                ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false))
-            }),
-            Button::new("Pause").on_click(|ctx, data: &mut state::App, _env| {
-                data.paused = true;
-                ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP)
-            }),
-        ))
-        .padding((8.0, 8.0))
+}
+
+fn build_pause_btn() -> impl Widget<state::App> {
+    Either::new(
+        |data: &state::App, _env| data.paused,
+        Button::new("Unpause").on_click(|ctx, data: &mut state::App, _env| {
+            data.paused = false;
+            ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false))
+        }),
+        Button::new("Pause").on_click(|ctx, data: &mut state::App, _env| {
+            data.paused = true;
+            ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP)
+        }),
+    )
 }

@@ -2,7 +2,7 @@ use crate::cmd;
 use crate::comp;
 use crate::env;
 use crate::state;
-use druid::widget::Flex;
+use druid::widget::{Flex, MainAxisAlignment};
 use druid::{MenuDesc, Target, Widget, WidgetExt, WidgetId, WindowDesc};
 
 pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc<state::App> {
@@ -23,6 +23,7 @@ pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc
 
 fn build(parent_widget_id: WidgetId, rest_duration_secs: f64) -> impl Widget<state::App> {
     Flex::column()
+        .main_axis_alignment(MainAxisAlignment::Center)
         .with_child(
             build_idle_timer(parent_widget_id, rest_duration_secs).lens(state::App::notifier),
         )
