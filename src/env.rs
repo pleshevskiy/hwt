@@ -1,6 +1,7 @@
 use crate::state;
 use druid::{Env, Key};
 
+pub const TIMER_INIT_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.init_duration");
 pub const TIMER_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.duration");
 pub const TIMER_POSTPONE_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.postpone_duration");
 pub const TIMER_WAIT_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.wait_duration");

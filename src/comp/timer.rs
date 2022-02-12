@@ -64,9 +64,12 @@ where
         let full_duration = self.full_duration(env);
         match event {
             Event::WindowConnected => {
-                self.start_time = Instant::now();
+                let shift_start_time = Duration::from_secs_f64(
+                    env.try_get(env::TIMER_INIT_DURATION).unwrap_or_default(),
+                );
+                self.start_time = Instant::now() - shift_start_time;
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                self.finish_timer_id = ctx.request_timer(duration);
+                self.finish_timer_id = ctx.request_timer(duration - shift_start_time);
                 data.reset(duration);
                 child.event(ctx, event, data, env);
             }
