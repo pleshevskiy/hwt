@@ -1,9 +1,7 @@
 use crate::state;
 use druid::{Color, Env, Key};
 
-pub const TIMER_INIT_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.init_duration");
 pub const TIMER_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.duration");
-pub const TIMER_POSTPONE_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.postpone_duration");
 
 pub const MICRO_BREAK_TIMER_DURATION: Key<f64> = Key::new("hwt.env.widget.micro_break.duration");
 pub const MICRO_BREAK_TIMER_POSTPONE_DURATION: Key<f64> =
@@ -36,6 +34,7 @@ pub fn configure(env: &mut Env, _data: &state::App) {
     env.set(druid::theme::BUTTON_DARK, col_pale);
     env.set(druid::theme::BUTTON_LIGHT, col_faded);
 
+    // timers
     env.set(MICRO_BREAK_TIMER_DURATION, 10.0);
     env.set(MICRO_BREAK_TIMER_POSTPONE_DURATION, 10.0);
     env.set(MICRO_BREAK_TIMER_REST_DURATION, 30.0);
