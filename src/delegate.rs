@@ -22,8 +22,8 @@ impl AppDelegate<state::App> for Delegate {
                 Handled::Yes
             }
             _ if cmd.is(cmd::OPEN_IDLE_WINDOW) => {
-                let (widget_id, wait_duration) = *cmd.get_unchecked(cmd::OPEN_IDLE_WINDOW);
-                ctx.new_window(win::rest::create(widget_id, wait_duration));
+                let (widget_id, rest_duration) = *cmd.get_unchecked(cmd::OPEN_IDLE_WINDOW);
+                ctx.new_window(win::rest::create(widget_id, rest_duration));
                 Handled::Yes
             }
             _ => Handled::No,
