@@ -29,18 +29,15 @@ fn build(parent_widget_id: WidgetId, rest_duration: f64) -> impl Widget<state::A
 
 fn build_idle_timer(parent_widget_id: WidgetId, rest_duration: f64) -> impl Widget<state::Timer> {
     comp::timer::build()
-        .controller(comp::timer::TimerController::new(move |ctx| {
-            ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
-            ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
-            ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
-            ctx.submit_command(druid::commands::CLOSE_WINDOW);
-        }))
+        .controller(
+            comp::timer::TimerController::new(move |ctx| {
+                ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
+                ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
+                ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
+                ctx.submit_command(druid::commands::CLOSE_WINDOW);
+            })
+            .with_init_duration_env(env::BREAK_NOTIFIER_TIMER_DURATION),
+        )
         .controller(comp::deinit::DeinitController::default())
-        .env_scope(move |env, _| {
-            env.set(
-                env::TIMER_INIT_DURATION,
-                env.get(env::BREAK_NOTIFIER_TIMER_DURATION),
-            );
-            env.set(env::TIMER_DURATION, rest_duration)
-        })
+        .env_scope(move |env, _| env.set(env::TIMER_DURATION, rest_duration))
 }

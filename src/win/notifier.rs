@@ -31,22 +31,19 @@ fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
 
 fn build_notifier_timer(parent_widget_id: WidgetId) -> impl Widget<state::Timer> {
     comp::timer::build()
-        .controller(comp::timer::TimerController::new(move |ctx| {
-            ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
-            ctx.submit_command(
-                cmd::OPEN_IDLE_WINDOW
-                    .with((parent_widget_id, 30.0))
-                    .to(Target::Global),
-            );
-            ctx.submit_command(druid::commands::CLOSE_WINDOW);
-        }))
+        .controller(
+            comp::timer::TimerController::new(move |ctx| {
+                ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
+                ctx.submit_command(
+                    cmd::OPEN_IDLE_WINDOW
+                        .with((parent_widget_id, 30.0))
+                        .to(Target::Global),
+                );
+                ctx.submit_command(druid::commands::CLOSE_WINDOW);
+            })
+            .with_duration_env(env::BREAK_NOTIFIER_TIMER_DURATION),
+        )
         .controller(comp::deinit::DeinitController::default())
-        .env_scope(move |env, _| {
-            env.set(
-                env::TIMER_DURATION,
-                env.get(env::BREAK_NOTIFIER_TIMER_DURATION),
-            );
-        })
 }
 
 fn build_postpone_btn<D: druid::Data>(parent_widget_id: WidgetId) -> impl Widget<D> {

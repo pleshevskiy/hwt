@@ -15,6 +15,9 @@ pub fn build() -> impl Widget<state::Timer> {
 }
 
 pub struct TimerController {
+    env_duration: Key<f64>,
+    env_init_duration: Option<Key<f64>>,
+    env_postpone_duration: Option<Key<f64>>,
     start_time: Instant,
     pause_time: Option<Instant>,
     render_timer_id: TimerToken,
@@ -38,6 +41,9 @@ impl TimerController {
 impl Default for TimerController {
     fn default() -> Self {
         Self {
+            env_duration: env::TIMER_DURATION,
+            env_init_duration: None,
+            env_postpone_duration: None,
             start_time: Instant::now(),
             pause_time: None,
             render_timer_id: TimerToken::INVALID,
@@ -45,6 +51,23 @@ impl Default for TimerController {
             finish_handler: None,
             postpone_times: 0,
         }
+    }
+}
+
+impl TimerController {
+    pub fn with_duration_env(mut self, key: Key<f64>) -> Self {
+        self.env_duration = key;
+        self
+    }
+
+    pub fn with_init_duration_env(mut self, key: Key<f64>) -> Self {
+        self.env_init_duration = Some(key);
+        self
+    }
+
+    pub fn with_postpone_duration_env(mut self, key: Key<f64>) -> Self {
+        self.env_postpone_duration = Some(key);
+        self
     }
 }
 
@@ -65,8 +88,12 @@ where
         match event {
             Event::WindowConnected => {
                 let shift_start_time = Duration::from_secs_f64(
-                    env.try_get(env::TIMER_INIT_DURATION).unwrap_or_default(),
+                    self.env_init_duration
+                        .as_ref()
+                        .map(|k| env.get(k))
+                        .unwrap_or_default(),
                 );
+
                 self.start_time = Instant::now() - shift_start_time;
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
                 self.finish_timer_id = ctx.request_timer(duration - shift_start_time);
@@ -127,18 +154,24 @@ where
 }
 
 impl TimerController {
+    fn full_duration(&self, env: &Env) -> Duration {
+        self.duration(env) + self.postpone_times * self.postpone_duration(env)
+    }
+
     fn duration(&self, env: &Env) -> Duration {
-        Duration::from_secs_f64(env.get(env::TIMER_DURATION))
+        Duration::from_secs_f64(env.get(&self.env_duration))
     }
 
     fn postpone_duration(&self, env: &Env) -> Duration {
         match self.postpone_times {
             0 => Duration::ZERO,
-            _ => Duration::from_secs_f64(env.get(env::TIMER_POSTPONE_DURATION)),
+            _ => {
+                let key = self
+                    .env_postpone_duration
+                    .as_ref()
+                    .unwrap_or(&self.env_duration);
+                Duration::from_secs_f64(env.get(key))
+            }
         }
-    }
-
-    fn full_duration(&self, env: &Env) -> Duration {
-        self.duration(env) + self.postpone_times * self.postpone_duration(env)
     }
 }
