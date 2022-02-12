@@ -108,7 +108,7 @@ where
                 child.event(ctx, event, data, env);
             }
             Event::Timer(id) if *id == self.render_timer_id => {
-                data.update_progress_and_time(self.start_time.elapsed(), duration, full_duration);
+                data.update_progress_and_time(self.start_time.elapsed(), full_duration);
                 ctx.request_paint();
 
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);

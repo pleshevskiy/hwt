@@ -38,17 +38,12 @@ impl Timer {
     }
 
     pub fn reset(&mut self, duration: Duration) {
-        self.update_progress_and_time(Duration::ZERO, duration, duration)
+        self.update_progress_and_time(Duration::ZERO, duration)
     }
 
-    pub fn update_progress_and_time(
-        &mut self,
-        elapsed: Duration,
-        duration: Duration,
-        full_duration: Duration,
-    ) {
+    pub fn update_progress_and_time(&mut self, elapsed: Duration, full_duration: Duration) {
         self.update_progress(elapsed, full_duration);
-        self.update_time(elapsed, duration);
+        self.update_time(elapsed, full_duration);
     }
 
     fn update_progress(&mut self, elapsed: Duration, duration: Duration) {
