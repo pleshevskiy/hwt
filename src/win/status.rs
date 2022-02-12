@@ -23,6 +23,7 @@ fn build() -> impl Widget<state::App> {
                 "Micro",
                 env::MICRO_BREAK_TIMER_DURATION,
                 env::MICRO_BREAK_TIMER_POSTPONE_DURATION,
+                env::MICRO_BREAK_TIMER_REST_DURATION,
             )
             .lens(state::App::micro_break),
         )
@@ -32,6 +33,7 @@ fn build() -> impl Widget<state::App> {
                 "Rest",
                 env::REST_BREAK_TIMER_DURATION,
                 env::REST_BREAK_TIMER_POSTPONE_DURATION,
+                env::REST_BREAK_TIMER_REST_DURATION,
             )
             .lens(state::App::rest_break),
         )

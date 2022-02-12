@@ -1,6 +1,7 @@
 use druid::{Selector, WidgetId};
 
-pub const OPEN_NOTIFIER_WINDOW: Selector<WidgetId> = Selector::new("hwt.cmd.win.notifier.open");
+pub const OPEN_NOTIFIER_WINDOW: Selector<(WidgetId, f64)> =
+    Selector::new("hwt.cmd.win.notifier.open");
 pub const OPEN_IDLE_WINDOW: Selector<(WidgetId, f64)> = Selector::new("hwt.cmd.win.idle.open");
 
 pub const DEINIT_COMP: Selector = Selector::new("hwt.cmd.comp.deinit");

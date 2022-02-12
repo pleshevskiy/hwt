@@ -5,7 +5,7 @@ use crate::state;
 use druid::widget::{Button, Flex};
 use druid::{MenuDesc, Target, Widget, WidgetExt, WidgetId, WindowDesc};
 
-pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
+pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc<state::App> {
     let win_width = 200.0;
     let win_height = 100.0;
 
@@ -13,7 +13,7 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
     let x = (rect.width() - win_width) / 2.0;
     let y = 0.0;
 
-    return WindowDesc::new(move || build(parent_widget_id))
+    return WindowDesc::new(move || build(parent_widget_id, rest_duration_secs))
         .show_titlebar(false)
         .menu(MenuDesc::empty())
         .set_position((x, y))
@@ -21,22 +21,27 @@ pub fn create(parent_widget_id: WidgetId) -> WindowDesc<state::App> {
         .window_size((win_width, win_height));
 }
 
-fn build(parent_widget_id: WidgetId) -> impl Widget<state::App> {
+fn build(parent_widget_id: WidgetId, rest_duration_secs: f64) -> impl Widget<state::App> {
     Flex::column()
-        .with_child(build_notifier_timer(parent_widget_id).lens(state::App::notifier))
+        .with_child(
+            build_notifier_timer(parent_widget_id, rest_duration_secs).lens(state::App::notifier),
+        )
         .with_default_spacer()
         .with_child(build_postpone_btn(parent_widget_id))
         .padding((8.0, 8.0))
 }
 
-fn build_notifier_timer(parent_widget_id: WidgetId) -> impl Widget<state::Timer> {
+fn build_notifier_timer(
+    parent_widget_id: WidgetId,
+    rest_duration_secs: f64,
+) -> impl Widget<state::Timer> {
     comp::timer::build()
         .controller(
-            comp::timer::TimerController::new(move |ctx| {
+            comp::timer::TimerController::new(move |ctx, _| {
                 ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
                 ctx.submit_command(
                     cmd::OPEN_IDLE_WINDOW
-                        .with((parent_widget_id, 30.0))
+                        .with((parent_widget_id, rest_duration_secs))
                         .to(Target::Global),
                 );
                 ctx.submit_command(druid::commands::CLOSE_WINDOW);

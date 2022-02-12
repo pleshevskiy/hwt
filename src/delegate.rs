@@ -17,13 +17,13 @@ impl AppDelegate<state::App> for Delegate {
     ) -> Handled {
         match cmd {
             _ if cmd.is(cmd::OPEN_NOTIFIER_WINDOW) => {
-                let widget_id = *cmd.get_unchecked(cmd::OPEN_NOTIFIER_WINDOW);
-                ctx.new_window(win::notifier::create(widget_id));
+                let (widget_id, rest_duration_secs) = *cmd.get_unchecked(cmd::OPEN_NOTIFIER_WINDOW);
+                ctx.new_window(win::notifier::create(widget_id, rest_duration_secs));
                 Handled::Yes
             }
             _ if cmd.is(cmd::OPEN_IDLE_WINDOW) => {
-                let (widget_id, rest_duration) = *cmd.get_unchecked(cmd::OPEN_IDLE_WINDOW);
-                ctx.new_window(win::rest::create(widget_id, rest_duration));
+                let (widget_id, rest_duration_secs) = *cmd.get_unchecked(cmd::OPEN_IDLE_WINDOW);
+                ctx.new_window(win::rest::create(widget_id, rest_duration_secs));
                 Handled::Yes
             }
             _ => Handled::No,

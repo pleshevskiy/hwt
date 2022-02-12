@@ -18,18 +18,19 @@ pub struct TimerController {
     env_duration: Key<f64>,
     env_init_duration: Option<Key<f64>>,
     env_postpone_duration: Option<Key<f64>>,
+    env_rest_duration: Option<Key<f64>>,
     start_time: Instant,
     pause_time: Option<Instant>,
     render_timer_id: TimerToken,
     finish_timer_id: TimerToken,
-    finish_handler: Option<Box<dyn Fn(&mut EventCtx)>>,
+    finish_handler: Option<Box<dyn Fn(&mut EventCtx, f64)>>,
     postpone_times: u32,
 }
 
 impl TimerController {
     pub fn new<Handler>(finish_handler: Handler) -> Self
     where
-        Handler: Fn(&mut EventCtx) + 'static,
+        Handler: Fn(&mut EventCtx, f64) + 'static,
     {
         Self {
             finish_handler: Some(Box::new(finish_handler)),
@@ -44,6 +45,7 @@ impl Default for TimerController {
             env_duration: env::TIMER_DURATION,
             env_init_duration: None,
             env_postpone_duration: None,
+            env_rest_duration: None,
             start_time: Instant::now(),
             pause_time: None,
             render_timer_id: TimerToken::INVALID,
@@ -67,6 +69,11 @@ impl TimerController {
 
     pub fn with_postpone_duration_env(mut self, key: Key<f64>) -> Self {
         self.env_postpone_duration = Some(key);
+        self
+    }
+
+    pub fn with_rest_duration_env(mut self, key: Key<f64>) -> Self {
+        self.env_rest_duration = Some(key);
         self
     }
 }
@@ -108,7 +115,7 @@ where
             }
             Event::Timer(id) if *id == self.finish_timer_id => {
                 if let Some(finish_handler) = &self.finish_handler {
-                    finish_handler(ctx);
+                    finish_handler(ctx, self.full_rest_duration(env).as_secs_f64());
                 }
             }
             Event::Command(cmd) if cmd.is(cmd::PAUSE_ALL_TIMER_COMP) => {
@@ -154,6 +161,31 @@ where
 }
 
 impl TimerController {
+    fn full_rest_duration(&self, env: &Env) -> Duration {
+        self.rest_duration(env) + self.postpone_times * self.postpone_rest_duration(env)
+    }
+
+    fn postpone_rest_duration(&self, env: &Env) -> Duration {
+        match (&self.env_postpone_duration, &self.env_rest_duration) {
+            (Some(_), Some(_)) => {
+                let duration = self.duration(env).as_secs_f64();
+                let rest_duration = self.rest_duration(env).as_secs_f64();
+                let postpone_duration = self.postpone_duration(env).as_secs_f64();
+
+                let rest_per_sec = rest_duration / duration;
+                Duration::from_secs_f64(postpone_duration * rest_per_sec)
+            }
+            _ => Duration::ZERO,
+        }
+    }
+
+    fn rest_duration(&self, env: &Env) -> Duration {
+        match &self.env_rest_duration {
+            None => Duration::ZERO,
+            Some(key) => Duration::from_secs_f64(env.get(key)),
+        }
+    }
+
     fn full_duration(&self, env: &Env) -> Duration {
         self.duration(env) + self.postpone_times * self.postpone_duration(env)
     }
