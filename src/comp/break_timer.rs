@@ -20,8 +20,8 @@ pub fn build(
                         cmd::OPEN_NOTIFIER_WINDOW.with((ctx.widget_id(), rest_duration_secs)),
                     )
                 })
-                .with_duration_env(duration_env_key.clone())
-                .with_postpone_duration_env(postpone_duration_env_key.clone())
+                .with_duration(duration_env_key.clone())
+                .with_postpone_duration(postpone_duration_env_key.clone())
                 .with_rest_duration_env(rest_duration_env_key.clone()),
             )
             .lens(state::BreakTimer::work_timer),

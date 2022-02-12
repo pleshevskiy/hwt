@@ -46,7 +46,7 @@ fn build_notifier_timer(
                 );
                 ctx.submit_command(druid::commands::CLOSE_WINDOW);
             })
-            .with_duration_env(env::BREAK_NOTIFIER_TIMER_DURATION),
+            .with_duration(env::BREAK_NOTIFIER_TIMER_DURATION),
         )
         .controller(comp::deinit::DeinitController::default())
 }
