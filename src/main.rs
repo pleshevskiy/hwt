@@ -17,7 +17,6 @@ fn main() {
     };
 
     AppLauncher::with_window(win::status::create())
-        .use_simple_logger()
         .delegate(Delegate)
         .configure_env(env::configure)
         .launch(initial_state)
