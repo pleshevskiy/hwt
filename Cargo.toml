@@ -1,9 +1,13 @@
 [package]
-name = "hwt"
+name = "hwt_ui"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "hwt"
+path = "src/main.rs"
 
 [dependencies]
 druid = "0.7.0"
