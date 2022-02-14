@@ -11,12 +11,7 @@ pub fn build(
     rest_duration_env_key: Key<f64>,
 ) -> impl Widget<state::BreakTimer> {
     comp::flex::row_sta_sta()
-        .with_child(
-            Label::new(name)
-                .align_right()
-                .fix_width(50.0)
-                .background(druid::Color::AQUA),
-        )
+        .with_child(Label::new(name).align_right().fix_width(50.0))
         .with_child(
             comp::timer::build()
                 .controller(

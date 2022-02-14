@@ -13,7 +13,7 @@ pub fn build() -> impl Widget<state::Timer> {
     let progress_bar = ProgressBar::new().lens(state::Timer::progress);
 
     comp::flex::row_sta_sta()
-        .with_child(time_label)
+        .with_child(time_label.align_right().fix_width(55.0))
         .with_child(progress_bar)
 }
 
