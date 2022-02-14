@@ -54,7 +54,7 @@ fn build_idle_timer(
 }
 
 fn build_finish_btn(parent_widget_id: WidgetId) -> impl Widget<state::App> {
-    Button::new("Finish the rest").on_click(move |ctx, _data, _env| {
+    Button::new("Finish").on_click(move |ctx, _data, _env| {
         ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
         ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
         ctx.submit_command(druid::commands::CLOSE_WINDOW);
