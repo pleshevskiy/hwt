@@ -6,6 +6,7 @@ authors = ["Dmitriy Pleshevskiy <dmitriy@ideascup.me>"]
 description = "healthy workaholic timer – A tool that keeps you from breaking your health by working all day."
 readme = "./readme.md"
 repository = "https://github.com/pleshevskiy/hwt"
+license = "MIT"
 
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
