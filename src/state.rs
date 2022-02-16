@@ -1,9 +1,12 @@
+use crate::sound;
 use druid::{Data, Lens};
 use std::ops::Div;
+use std::rc::Rc;
 use std::time::Duration;
 
 #[derive(Clone, Data, Lens)]
 pub struct App {
+    pub sound_sender: Rc<sound::Sender>,
     pub paused: bool,
     pub micro_break: BreakTimer,
     pub rest_break: BreakTimer,

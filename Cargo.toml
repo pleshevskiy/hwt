@@ -19,3 +19,4 @@ path = "src/main.rs"
 druid = "0.7.0"
 
 log = "0.4.14"
+rodio = "0.15.0"
