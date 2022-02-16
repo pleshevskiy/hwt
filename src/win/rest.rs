@@ -1,11 +1,17 @@
 use crate::cmd;
 use crate::comp;
 use crate::env;
+use crate::sound;
 use crate::state;
 use druid::widget::Button;
 use druid::{MenuDesc, Target, Widget, WidgetExt, WidgetId, WindowDesc};
+use std::rc::Rc;
 
-pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc<state::App> {
+pub fn create(
+    parent_widget_id: WidgetId,
+    rest_duration_secs: f64,
+    sound_sender: Rc<sound::Sender>,
+) -> WindowDesc<state::App> {
     let win_width = 450.0;
     let win_height = 200.0;
 
@@ -13,7 +19,7 @@ pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc
     let x = (rect.width() - win_width) / 2.0;
     let y = (rect.height() - win_height) / 2.0;
 
-    return WindowDesc::new(move || build(parent_widget_id, rest_duration_secs))
+    return WindowDesc::new(move || build(parent_widget_id, rest_duration_secs, sound_sender))
         .show_titlebar(false)
         .menu(MenuDesc::empty())
         .set_position((x, y))
@@ -21,12 +27,16 @@ pub fn create(parent_widget_id: WidgetId, rest_duration_secs: f64) -> WindowDesc
         .window_size((win_width, win_height));
 }
 
-fn build(parent_widget_id: WidgetId, rest_duration_secs: f64) -> impl Widget<state::App> {
+fn build(
+    parent_widget_id: WidgetId,
+    rest_duration_secs: f64,
+    sound_sender: Rc<sound::Sender>,
+) -> impl Widget<state::App> {
     comp::flex::col_cen_cen()
         .with_child(
             comp::flex::col_sta_end()
                 .with_child(
-                    build_idle_timer(parent_widget_id, rest_duration_secs)
+                    build_idle_timer(parent_widget_id, rest_duration_secs, sound_sender)
                         .lens(state::App::notifier),
                 )
                 .with_default_spacer()
@@ -38,10 +48,13 @@ fn build(parent_widget_id: WidgetId, rest_duration_secs: f64) -> impl Widget<sta
 fn build_idle_timer(
     parent_widget_id: WidgetId,
     rest_duration_secs: f64,
+    sound_sender: Rc<sound::Sender>,
 ) -> impl Widget<state::Timer> {
     comp::timer::build()
         .controller(
             comp::timer::TimerController::new(move |ctx, _| {
+                sound_sender.send(sound::Type::EndRest).ok();
+
                 ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
                 ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
                 ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
