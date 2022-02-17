@@ -31,7 +31,7 @@ fn main() {
     };
 
     AppLauncher::with_window(win::status::create(initial_state.sound_sender.clone()))
-        .delegate(Delegate)
+        .delegate(Delegate::default())
         .configure_env(env::configure)
         .launch(initial_state)
         .expect("Failed to launch application");
