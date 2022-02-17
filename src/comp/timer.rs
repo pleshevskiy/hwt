@@ -105,9 +105,14 @@ where
                 );
 
                 self.start_time = Instant::now() - shift_start_time;
-                self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                self.finish_timer_id = ctx.request_timer(duration - shift_start_time);
                 data.reset(duration);
+                if data.paused {
+                    self.pause_time = Some(self.start_time);
+                } else {
+                    self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
+                    self.finish_timer_id = ctx.request_timer(duration - shift_start_time);
+                }
+
                 child.event(ctx, event, data, env);
             }
             Event::Timer(id) if *id == self.render_timer_id => {
@@ -122,11 +127,14 @@ where
                 }
             }
             Event::Command(cmd) if cmd.is(cmd::PAUSE_ALL_TIMER_COMP) => {
+                data.paused = true;
                 self.pause_time = Some(Instant::now());
                 self.render_timer_id = TimerToken::INVALID;
                 self.finish_timer_id = TimerToken::INVALID;
             }
             Event::Command(cmd) if cmd.is(cmd::UNPAUSE_ALL_TIMER_COMP) => {
+                data.paused = false;
+
                 let skip_pause = cmd.get_unchecked(cmd::UNPAUSE_ALL_TIMER_COMP);
                 self.finish_timer_id =
                     if let (false, Some(pause_instant)) = (skip_pause, self.pause_time.take()) {
@@ -148,10 +156,15 @@ where
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
             }
             Event::Command(cmd) if cmd.is(cmd::RESTART_TIMER_COMP) => {
-                self.start_time = Instant::now();
                 self.postpone_times = 0;
-                self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
-                self.finish_timer_id = ctx.request_timer(duration);
+                self.start_time = Instant::now();
+                if data.paused {
+                    self.pause_time = Some(self.start_time)
+                } else {
+                    self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
+                    self.finish_timer_id = ctx.request_timer(duration);
+                }
+
                 data.reset(duration);
                 ctx.request_paint();
             }
