@@ -22,14 +22,7 @@ fn main() {
             .ok();
     });
 
-    let initial_state = state::App {
-        paused: false,
-        micro_break: state::BreakTimer::new(),
-        rest_break: state::BreakTimer::new(),
-        notifier: state::Timer::new(),
-        sound_sender: std::rc::Rc::new(tx.clone()),
-    };
-
+    let initial_state = state::App::new(tx, true);
     AppLauncher::with_window(win::status::create(initial_state.sound_sender.clone()))
         .delegate(Delegate::default())
         .configure_env(env::configure)
