@@ -4,7 +4,10 @@ use crate::win;
 use druid::{AppDelegate, Command, DelegateCtx, Env, Handled, Target, WindowId};
 use log::info;
 
-pub struct Delegate;
+#[derive(Default)]
+pub struct Delegate {
+    status_win_id: Option<WindowId>,
+}
 
 impl AppDelegate<state::App> for Delegate {
     fn command(
@@ -16,6 +19,13 @@ impl AppDelegate<state::App> for Delegate {
         _env: &Env,
     ) -> Handled {
         match cmd {
+            _ if cmd.is(druid::commands::CLOSE_WINDOW) => match cmd.target() {
+                Target::Window(id) if Some(id) == self.status_win_id => {
+                    ctx.submit_command(druid::commands::QUIT_APP);
+                    Handled::Yes
+                }
+                _ => Handled::No,
+            },
             _ if cmd.is(cmd::OPEN_NOTIFIER_WINDOW) => {
                 let (widget_id, rest_duration_secs) = *cmd.get_unchecked(cmd::OPEN_NOTIFIER_WINDOW);
                 ctx.new_window(win::notifier::create(
@@ -46,5 +56,8 @@ impl AppDelegate<state::App> for Delegate {
         _ctx: &mut DelegateCtx,
     ) {
         info!("Window added, id: {:?}", id);
+        if self.status_win_id.is_none() {
+            self.status_win_id = Some(id);
+        }
     }
 }
