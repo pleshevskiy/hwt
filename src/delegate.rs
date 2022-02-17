@@ -44,6 +44,14 @@ impl AppDelegate<state::App> for Delegate {
                 ));
                 Handled::Yes
             }
+            _ if cmd.is(cmd::PAUSE_ALL_TIMER_COMP) => {
+                data.paused = true;
+                Handled::No
+            }
+            _ if cmd.is(cmd::UNPAUSE_ALL_TIMER_COMP) => {
+                data.paused = false;
+                Handled::No
+            }
             _ => Handled::No,
         }
     }
