@@ -15,7 +15,7 @@ use std::thread;
 fn main() {
     let (tx, rx) = channel::<sound::Type>();
 
-    let boombox = thread::spawn(move || loop {
+    thread::spawn(move || loop {
         rx.recv()
             .map_err(From::from)
             .and_then(|sound_type| sound::try_play(sound_type.into()))
@@ -35,5 +35,4 @@ fn main() {
         .configure_env(env::configure)
         .launch(initial_state)
         .expect("Failed to launch application");
-    boombox.join().unwrap();
 }
