@@ -56,7 +56,6 @@ fn build_idle_timer(
                 sound_sender.send(sound::Type::EndRest).ok();
 
                 ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
-                ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
                 ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
                 ctx.submit_command(druid::commands::CLOSE_WINDOW);
             })
