@@ -53,7 +53,7 @@ fn build_timers(sender: Rc<sound::Sender>) -> impl Widget<state::App> {
 fn build_pause_btn() -> impl Widget<state::App> {
     Either::new(
         |data: &state::App, _env| data.paused,
-        Button::new("Unpause").on_click(|ctx, data: &mut state::App, _env| {
+        Button::new("Start").on_click(|ctx, data: &mut state::App, _env| {
             data.paused = false;
             ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false))
         }),
