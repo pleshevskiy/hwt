@@ -22,7 +22,7 @@ impl AppDelegate<state::App> for Delegate {
             _ if cmd.is(druid::commands::CLOSE_WINDOW) => match cmd.target() {
                 Target::Window(id) if Some(id) == self.status_win_id => {
                     ctx.submit_command(druid::commands::QUIT_APP);
-                    Handled::Yes
+                    Handled::No
                 }
                 _ => Handled::No,
             },
