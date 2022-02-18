@@ -1,5 +1,6 @@
 mod cmd;
 mod comp;
+mod config;
 mod delegate;
 mod env;
 mod sound;
