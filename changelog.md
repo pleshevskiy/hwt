@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- fix(delegate): propagate close_window cmd event forward ([#11] by
+  [@pleshevskiy])
+
 ## v0.2
 
 - feat(win/status): add reset button ([#9] by [@pleshevskiy])
