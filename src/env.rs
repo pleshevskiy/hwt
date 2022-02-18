@@ -1,4 +1,4 @@
-use crate::state;
+use crate::config;
 use druid::{Color, Env, Key};
 
 pub const TIMER_DURATION: Key<f64> = Key::new("hwt.env.comp.timer.duration");
@@ -17,7 +17,7 @@ pub const REST_BREAK_TIMER_REST_DURATION: Key<f64> =
 
 pub const BREAK_NOTIFIER_TIMER_DURATION: Key<f64> = Key::new("hwt.env.widget.notifier.duration");
 
-pub fn configure(env: &mut Env, _data: &state::App) {
+pub fn configure(env: &mut Env, config: &config::Env) {
     let col_def_white = hsl(0.0, 0.0, 1.0);
     // let col_def_black = hsl(0.0, 0.0, 0.0);
     let col_graphite = hsl(0.0, 0.0, 0.13);
@@ -35,19 +35,27 @@ pub fn configure(env: &mut Env, _data: &state::App) {
     env.set(druid::theme::BUTTON_LIGHT, col_faded);
 
     // timers
-    env.set(MICRO_BREAK_TIMER_DURATION, mins(5.0));
-    env.set(MICRO_BREAK_TIMER_POSTPONE_DURATION, mins(2.5));
-    env.set(MICRO_BREAK_TIMER_REST_DURATION, 30.0);
+    env.set(MICRO_BREAK_TIMER_DURATION, config.micro_timer.duration);
+    env.set(
+        MICRO_BREAK_TIMER_POSTPONE_DURATION,
+        config.micro_timer.postpone_duration,
+    );
+    env.set(
+        MICRO_BREAK_TIMER_REST_DURATION,
+        config.micro_timer.rest_duration,
+    );
 
-    env.set(REST_BREAK_TIMER_DURATION, mins(45.0));
-    env.set(REST_BREAK_TIMER_POSTPONE_DURATION, mins(5.0));
-    env.set(REST_BREAK_TIMER_REST_DURATION, mins(10.0));
+    env.set(REST_BREAK_TIMER_DURATION, config.rest_timer.duration);
+    env.set(
+        REST_BREAK_TIMER_POSTPONE_DURATION,
+        config.rest_timer.postpone_duration,
+    );
+    env.set(
+        REST_BREAK_TIMER_REST_DURATION,
+        config.rest_timer.rest_duration,
+    );
 
-    env.set(BREAK_NOTIFIER_TIMER_DURATION, 10.0);
-}
-
-fn mins(m: f64) -> f64 {
-    return m * 60.0;
+    env.set(BREAK_NOTIFIER_TIMER_DURATION, config.notifier.duration);
 }
 
 fn hsl(h: f64, s: f64, l: f64) -> Color {
