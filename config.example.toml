@@ -1,0 +1,12 @@
+[notifier]
+duration = 5.0
+
+[micro_timer]
+duration = 180.0
+postpone_duration = 90.0
+rest_duration = 30.0
+
+[rest_timer]
+duration = 1800.0
+postpone_duration = 600.0
+rest_duration = 900.0
