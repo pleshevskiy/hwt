@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat(win): use modal level for notifier and rest windows ([#13] by
+  [@pleshevskiy])
 - feat(config): use toml config instead of hard-coded env ([#12] by
   [@pleshevskiy])
 - fix(delegate): propagate close_window cmd event forward ([#11] by
