@@ -18,6 +18,7 @@ path = "src/main.rs"
 [dependencies]
 log = "0.4.14"
 druid = "0.7.0"
+druid-shell = "0.7.0"
 rodio = "0.15.0"
 serde = { version = "1.0.136", features = ["derive"] }
 toml = "0.5.8"

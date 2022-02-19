@@ -61,11 +61,17 @@ impl AppDelegate<state::App> for Delegate {
         id: WindowId,
         _data: &mut state::App,
         _env: &Env,
-        _ctx: &mut DelegateCtx,
+        ctx: &mut DelegateCtx,
     ) {
         info!("Window added, id: {:?}", id);
         if self.status_win_id.is_none() {
             self.status_win_id = Some(id);
+        } else {
+            ctx.submit_command(
+                druid::commands::CONFIGURE_WINDOW
+                    .with(druid::WindowConfig::default().set_level(druid_shell::WindowLevel::Modal))
+                    .to(Target::Window(id)),
+            )
         }
     }
 }
