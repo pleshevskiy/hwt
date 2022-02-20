@@ -17,6 +17,8 @@ pub const REST_BREAK_TIMER_REST_DURATION: Key<f64> =
 
 pub const BREAK_NOTIFIER_TIMER_DURATION: Key<f64> = Key::new("hwt.env.widget.notifier.duration");
 
+pub const WIN_REST_AUTO_RESTART_BREAK_TIMERS: Key<bool> = Key::new("hwt.env.rest.auto_restart");
+
 pub fn configure(env: &mut Env, config: &config::Env) {
     let col_def_white = hsl(0.0, 0.0, 1.0);
     // let col_def_black = hsl(0.0, 0.0, 0.0);
@@ -56,6 +58,11 @@ pub fn configure(env: &mut Env, config: &config::Env) {
     );
 
     env.set(BREAK_NOTIFIER_TIMER_DURATION, config.notifier.duration);
+
+    env.set(
+        WIN_REST_AUTO_RESTART_BREAK_TIMERS,
+        config.auto_restart.unwrap_or_default(),
+    );
 }
 
 fn hsl(h: f64, s: f64, l: f64) -> Color {

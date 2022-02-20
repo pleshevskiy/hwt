@@ -63,7 +63,7 @@ fn build_pause_btn() -> impl Widget<state::App> {
             .with_default_spacer()
             .with_child(
                 Button::new("Reset")
-                    .on_click(|ctx, _data, _env| ctx.submit_command(cmd::RESTART_TIMER_COMP)),
+                    .on_click(|ctx, _data, _env| ctx.submit_command(cmd::RESET_TIMER_COMP)),
             ),
         comp::flex::row_sta_sta().with_child(Button::new("Pause").on_click(
             |ctx, data: &mut state::App, _env| {

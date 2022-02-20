@@ -13,6 +13,7 @@ pub fn default() -> Env {
             rest_duration: mins(10.0),
         },
         notifier: Notifier { duration: 10.0 },
+        auto_restart: Some(false),
     }
 }
 
@@ -25,6 +26,7 @@ pub struct Env {
     pub micro_timer: BreakTimer,
     pub rest_timer: BreakTimer,
     pub notifier: Notifier,
+    pub auto_restart: Option<bool>,
 }
 
 #[derive(Deserialize)]
