@@ -49,7 +49,7 @@ fn build_notifier_timer(
 ) -> impl Widget<state::Timer> {
     comp::timer::build()
         .controller(
-            comp::timer::TimerController::new(move |ctx, _| {
+            comp::timer::TimerController::new(move |ctx, _env, _rest_duration| {
                 sound_sender.send(sound::Type::EndNotifier).ok();
 
                 ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));

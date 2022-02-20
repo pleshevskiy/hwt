@@ -18,7 +18,7 @@ pub fn build(
         .with_child(
             comp::timer::build()
                 .controller(
-                    comp::timer::TimerController::new(move |ctx, rest_duration_secs| {
+                    comp::timer::TimerController::new(move |ctx, _env, rest_duration_secs| {
                         sound_sender.send(sound::Type::EndBreakTimer).ok();
 
                         ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP);

@@ -26,14 +26,14 @@ pub struct TimerController {
     pause_time: Option<Instant>,
     render_timer_id: TimerToken,
     finish_timer_id: TimerToken,
-    finish_handler: Option<Box<dyn Fn(&mut EventCtx, f64)>>,
+    finish_handler: Option<Box<dyn Fn(&mut EventCtx, &Env, f64)>>,
     postpone_times: u32,
 }
 
 impl TimerController {
     pub fn new<Handler>(finish_handler: Handler) -> Self
     where
-        Handler: Fn(&mut EventCtx, f64) + 'static,
+        Handler: Fn(&mut EventCtx, &Env, f64) + 'static,
     {
         Self {
             finish_handler: Some(Box::new(finish_handler)),
@@ -123,7 +123,7 @@ where
             }
             Event::Timer(id) if *id == self.finish_timer_id => {
                 if let Some(finish_handler) = &self.finish_handler {
-                    finish_handler(ctx, self.full_rest_duration(env).as_secs_f64());
+                    finish_handler(ctx, env, self.full_rest_duration(env).as_secs_f64());
                 }
             }
             Event::Command(cmd) if cmd.is(cmd::PAUSE_ALL_TIMER_COMP) => {
@@ -155,7 +155,7 @@ where
 
                 self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
             }
-            Event::Command(cmd) if cmd.is(cmd::RESTART_TIMER_COMP) => {
+            Event::Command(cmd) if cmd.is(cmd::RESET_TIMER_COMP) => {
                 self.postpone_times = 0;
                 self.start_time = Instant::now();
                 if data.paused {

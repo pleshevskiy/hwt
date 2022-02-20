@@ -52,11 +52,16 @@ fn build_idle_timer(
 ) -> impl Widget<state::Timer> {
     comp::timer::build()
         .controller(
-            comp::timer::TimerController::new(move |ctx, _| {
+            comp::timer::TimerController::new(move |ctx, env, _rest_duration| {
                 sound_sender.send(sound::Type::EndRest).ok();
 
                 ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
-                ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
+
+                if env.get(env::WIN_REST_AUTO_RESTART_BREAK_TIMERS) {
+                    ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
+                }
+
+                ctx.submit_command(cmd::RESET_TIMER_COMP.to(Target::Widget(parent_widget_id)));
                 ctx.submit_command(druid::commands::CLOSE_WINDOW);
             })
             .with_duration(rest_duration_secs)
@@ -68,7 +73,7 @@ fn build_idle_timer(
 fn build_finish_btn(parent_widget_id: WidgetId) -> impl Widget<state::App> {
     Button::new("Finish").on_click(move |ctx, _data, _env| {
         ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false).to(Target::Global));
-        ctx.submit_command(cmd::RESTART_TIMER_COMP.to(Target::Widget(parent_widget_id)));
+        ctx.submit_command(cmd::RESET_TIMER_COMP.to(Target::Widget(parent_widget_id)));
         ctx.submit_command(druid::commands::CLOSE_WINDOW);
     })
 }
