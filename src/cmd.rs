@@ -9,8 +9,3 @@ pub const PAUSE_ALL_TIMER_COMP: Selector = Selector::new("hwt.cmd.comp.timer.pau
 pub const UNPAUSE_ALL_TIMER_COMP: Selector<bool> = Selector::new("hwt.cmd.comp.timer.unpause.all");
 pub const POSTPONE_TIMER_COMP: Selector = Selector::new("hwt.cmd.comp.timer.postpone");
 pub const RESET_TIMER_COMP: Selector = Selector::new("hwt.cmd.comp.timer.reset");
-
-// pub const CYCLE_NOTIFICATION: Selector<usize> =
-//     Selector::new("hwt.comp.timer.cycle_notification");
-// pub const ACCEPT_TEMP_TIMER: Selector<WidgetId> =
-//     Selector::new("hwt.comp.timer.accept_temp_timer");
