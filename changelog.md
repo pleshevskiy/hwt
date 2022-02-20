@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat(config): add auto restart option ([#14] by [@pleshevskiy])
 - feat(win): use modal level for notifier and rest windows ([#13] by
   [@pleshevskiy])
 - feat(config): use toml config instead of hard-coded env ([#12] by
