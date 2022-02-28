@@ -30,9 +30,9 @@ fn build_timers(sender: Rc<sound::Sender>) -> impl Widget<state::App> {
         .with_child(
             comp::break_timer::build(
                 "Micro",
-                env::MICRO_BREAK_TIMER_DURATION,
-                env::MICRO_BREAK_TIMER_POSTPONE_DURATION,
-                env::MICRO_BREAK_TIMER_REST_DURATION,
+                &env::MICRO_BREAK_TIMER_DURATION,
+                &env::MICRO_BREAK_TIMER_POSTPONE_DURATION,
+                &env::MICRO_BREAK_TIMER_REST_DURATION,
                 sender.clone(),
             )
             .lens(state::App::micro_break),
@@ -41,10 +41,10 @@ fn build_timers(sender: Rc<sound::Sender>) -> impl Widget<state::App> {
         .with_child(
             comp::break_timer::build(
                 "Rest",
-                env::REST_BREAK_TIMER_DURATION,
-                env::REST_BREAK_TIMER_POSTPONE_DURATION,
-                env::REST_BREAK_TIMER_REST_DURATION,
-                sender.clone(),
+                &env::REST_BREAK_TIMER_DURATION,
+                &env::REST_BREAK_TIMER_POSTPONE_DURATION,
+                &env::REST_BREAK_TIMER_REST_DURATION,
+                sender,
             )
             .lens(state::App::rest_break),
         )
@@ -57,7 +57,7 @@ fn build_pause_btn() -> impl Widget<state::App> {
             .with_child(
                 Button::new("Start").on_click(|ctx, data: &mut state::App, _env| {
                     data.paused = false;
-                    ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false))
+                    ctx.submit_command(cmd::UNPAUSE_ALL_TIMER_COMP.with(false));
                 }),
             )
             .with_default_spacer()
@@ -68,7 +68,7 @@ fn build_pause_btn() -> impl Widget<state::App> {
         comp::flex::row_sta_sta().with_child(Button::new("Pause").on_click(
             |ctx, data: &mut state::App, _env| {
                 data.paused = true;
-                ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP)
+                ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP);
             },
         )),
     )

@@ -1,3 +1,5 @@
+#![deny(clippy::pedantic)]
+
 mod cmd;
 mod comp;
 mod config;
@@ -14,7 +16,7 @@ use std::sync::mpsc::channel;
 use std::thread;
 
 fn main() {
-    let cfg = if let Some(config_path) = std::env::args().skip(1).next() {
+    let cfg = if let Some(config_path) = std::env::args().nth(1) {
         log::debug!("[cli] config_path={}", config_path);
         let file_content = std::fs::read_to_string(config_path).unwrap_or_else(|err| {
             eprintln!("[ERROR] [fs] {}", err);

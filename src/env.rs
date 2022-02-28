@@ -65,52 +65,54 @@ pub fn configure(env: &mut Env, config: &config::Env) {
     );
 }
 
+#[allow(clippy::many_single_char_names)]
 fn hsl(h: f64, s: f64, l: f64) -> Color {
     hsla(h, s, l, 1.0)
 }
 
+#[allow(clippy::many_single_char_names)]
 fn hsla(h: f64, s: f64, l: f64, a: f64) -> Color {
     let (r, g, b) = hsl_to_rgb(h, s, l);
     Color::rgba(r, g, b, a)
 }
 
+#[allow(clippy::many_single_char_names)]
 fn hsl_to_rgb(h: f64, s: f64, l: f64) -> (f64, f64, f64) {
-    let r;
-    let g;
-    let b;
-
     if s == 0.0 {
-        r = l;
-        g = l;
-        b = l; // achromatic
+        (l, l, l)
     } else {
-        let q = if l < 0.5 { l * (1. + s) } else { l + s - l * s };
+        let q = if l < 0.5 {
+            l * (1.0 + s)
+        } else {
+            l + s - l * s
+        };
 
-        let p = 2. * l - q;
-        r = hue_to_rgb(p, q, h + 1. / 3.);
-        g = hue_to_rgb(p, q, h);
-        b = hue_to_rgb(p, q, h - 1. / 3.);
+        let p = 2.0 * l - q;
+        (
+            hue_to_rgb(p, q, h + 1.0 / 3.0),
+            hue_to_rgb(p, q, h),
+            hue_to_rgb(p, q, h - 1.0 / 3.0),
+        )
     }
-
-    return (r, g, b);
 }
 
 fn hue_to_rgb(p: f64, q: f64, t: f64) -> f64 {
     let mut t = t;
-    if t < 0. {
-        t += 1.
+    if t < 0.0 {
+        t += 1.0;
     }
-    if t > 1. {
-        t -= 1.
+    if t > 1.0 {
+        t -= 1.0;
     };
-    if t < 1. / 6. {
-        return p + (q - p) * 6. * t;
+    if t < 1.0 / 6.0 {
+        return p + (q - p) * 6.0 * t;
     }
-    if t < 1. / 2. {
+    if t < 1.0 / 2.0 {
         return q;
     }
-    if t < 2. / 3. {
-        return p + (q - p) * (2. / 3. - t) * 6.;
+    if t < 2.0 / 3.0 {
+        return p + (q - p) * (2.0 / 3.0 - t) * 6.0;
     }
-    return p;
+
+    p
 }

@@ -1,5 +1,6 @@
 pub type Sender = std::sync::mpsc::Sender<Type>;
 
+#[allow(clippy::enum_variant_names)]
 pub enum Type {
     EndBreakTimer,
     EndNotifier,

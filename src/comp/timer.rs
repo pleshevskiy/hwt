@@ -2,7 +2,7 @@ use crate::cmd;
 use crate::comp;
 use crate::env;
 use crate::state;
-use druid::widget::{Controller, Label, ProgressBar};
+use druid::widget::{Label, ProgressBar};
 use druid::{Env, Event, EventCtx, KeyOrValue, TimerToken, Widget, WidgetExt};
 use std::time::{Duration, Instant};
 
@@ -17,7 +17,9 @@ pub fn build() -> impl Widget<state::Timer> {
         .with_child(progress_bar)
 }
 
-pub struct TimerController {
+type FinishHandler = Box<dyn Fn(&mut EventCtx, &Env, f64)>;
+
+pub struct Controller {
     duration: KeyOrValue<f64>,
     init_duration: Option<KeyOrValue<f64>>,
     postpone_duration: Option<KeyOrValue<f64>>,
@@ -26,25 +28,25 @@ pub struct TimerController {
     pause_time: Option<Instant>,
     render_timer_id: TimerToken,
     finish_timer_id: TimerToken,
-    finish_handler: Option<Box<dyn Fn(&mut EventCtx, &Env, f64)>>,
+    finish_handler: Option<FinishHandler>,
     postpone_times: u32,
 }
 
-impl TimerController {
+impl Controller {
     pub fn new<Handler>(finish_handler: Handler) -> Self
     where
         Handler: Fn(&mut EventCtx, &Env, f64) + 'static,
     {
-        Self {
+        Controller {
             finish_handler: Some(Box::new(finish_handler)),
-            ..Default::default()
+            ..Controller::default()
         }
     }
 }
 
-impl Default for TimerController {
+impl Default for Controller {
     fn default() -> Self {
-        Self {
+        Controller {
             duration: env::TIMER_DURATION.into(),
             init_duration: None,
             postpone_duration: None,
@@ -59,7 +61,7 @@ impl Default for TimerController {
     }
 }
 
-impl TimerController {
+impl Controller {
     pub fn with_duration(mut self, secs: impl Into<KeyOrValue<f64>>) -> Self {
         self.duration = secs.into();
         self
@@ -81,7 +83,7 @@ impl TimerController {
     }
 }
 
-impl<W> Controller<state::Timer, W> for TimerController
+impl<W> druid::widget::Controller<state::Timer, W> for Controller
 where
     W: Widget<state::Timer>,
 {
@@ -159,7 +161,7 @@ where
                 self.postpone_times = 0;
                 self.start_time = Instant::now();
                 if data.paused {
-                    self.pause_time = Some(self.start_time)
+                    self.pause_time = Some(self.start_time);
                 } else {
                     self.render_timer_id = ctx.request_timer(TIMER_INTERVAL);
                     self.finish_timer_id = ctx.request_timer(duration);
@@ -176,7 +178,7 @@ where
     }
 }
 
-impl TimerController {
+impl Controller {
     fn full_rest_duration(&self, env: &Env) -> Duration {
         self.rest_duration(env) + self.postpone_times * self.postpone_rest_duration(env)
     }
@@ -210,6 +212,7 @@ impl TimerController {
         Duration::from_secs_f64(self.duration.resolve(env))
     }
 
+    #[allow(clippy::single_match_else)]
     fn postpone_duration(&self, env: &Env) -> Duration {
         match self.postpone_times {
             0 => Duration::ZERO,
