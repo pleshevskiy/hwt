@@ -71,7 +71,7 @@ impl AppDelegate<state::App> for Delegate {
                 druid::commands::CONFIGURE_WINDOW
                     .with(druid::WindowConfig::default().set_level(druid_shell::WindowLevel::Modal))
                     .to(Target::Window(id)),
-            )
+            );
         }
     }
 }

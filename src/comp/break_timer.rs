@@ -8,9 +8,9 @@ use std::rc::Rc;
 
 pub fn build(
     name: &str,
-    duration_env_key: Key<f64>,
-    postpone_duration_env_key: Key<f64>,
-    rest_duration_env_key: Key<f64>,
+    duration_env_key: &Key<f64>,
+    postpone_duration_env_key: &Key<f64>,
+    rest_duration_env_key: &Key<f64>,
     sound_sender: Rc<sound::Sender>,
 ) -> impl Widget<state::BreakTimer> {
     comp::flex::row_sta_sta()
@@ -18,7 +18,7 @@ pub fn build(
         .with_child(
             comp::timer::build()
                 .controller(
-                    comp::timer::TimerController::new(move |ctx, _env, rest_duration_secs| {
+                    comp::timer::Controller::new(move |ctx, _env, rest_duration_secs| {
                         sound_sender.send(sound::Type::EndBreakTimer).ok();
 
                         ctx.submit_command(cmd::PAUSE_ALL_TIMER_COMP);

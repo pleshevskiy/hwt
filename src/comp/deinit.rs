@@ -1,13 +1,12 @@
 use crate::cmd;
-use druid::widget::Controller;
 use druid::{Data, Env, Event, EventCtx, LifeCycle, LifeCycleCtx, UpdateCtx, Widget};
 
 #[derive(Default)]
-pub struct DeinitController {
+pub struct Controller {
     deinit: bool,
 }
 
-impl<W, D> Controller<D, W> for DeinitController
+impl<W, D> druid::widget::Controller<D, W> for Controller
 where
     D: Data,
     W: Widget<D>,
@@ -30,13 +29,13 @@ where
         env: &Env,
     ) {
         if !self.deinit {
-            child.lifecycle(ctx, event, data, env)
+            child.lifecycle(ctx, event, data, env);
         }
     }
 
     fn update(&mut self, child: &mut W, ctx: &mut UpdateCtx, old_data: &D, data: &D, env: &Env) {
         if !self.deinit {
-            child.update(ctx, old_data, data, env)
+            child.update(ctx, old_data, data, env);
         }
     }
 }

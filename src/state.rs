@@ -49,13 +49,13 @@ impl Timer {
     pub fn new(paused: bool) -> Self {
         Self {
             progress: Default::default(),
-            time: Default::default(),
+            time: String::default(),
             paused,
         }
     }
 
     pub fn reset(&mut self, duration: Duration) {
-        self.update_progress_and_time(Duration::ZERO, duration)
+        self.update_progress_and_time(Duration::ZERO, duration);
     }
 
     pub fn update_progress_and_time(&mut self, elapsed: Duration, full_duration: Duration) {
@@ -67,6 +67,7 @@ impl Timer {
         self.progress = elapsed.as_secs_f64().div(duration.as_secs_f64()).min(1.0);
     }
 
+    #[allow(clippy::cast_possible_truncation)]
     fn update_time(&mut self, elapsed: Duration, duration: Duration) {
         let all_secs = duration.as_secs_f64() - elapsed.as_secs_f64();
         let sign = if all_secs < 0.0 { "-" } else { "" };
@@ -79,7 +80,7 @@ impl Timer {
             sign,
             mins as i32,
             if secs < 10.0 { "0" } else { "" },
-            secs as u32
+            secs as i32
         );
     }
 }

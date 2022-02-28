@@ -19,12 +19,12 @@ pub fn create(
     let x = (rect.width() - win_width) / 2.0;
     let y = (rect.height() - win_height) / 2.0;
 
-    return WindowDesc::new(move || build(parent_widget_id, rest_duration_secs, sound_sender))
+    WindowDesc::new(move || build(parent_widget_id, rest_duration_secs, sound_sender))
         .show_titlebar(false)
         .menu(MenuDesc::empty())
         .set_position((x, y))
         .with_min_size((win_width, win_height))
-        .window_size((win_width, win_height));
+        .window_size((win_width, win_height))
 }
 
 fn build(
@@ -52,7 +52,7 @@ fn build_idle_timer(
 ) -> impl Widget<state::Timer> {
     comp::timer::build()
         .controller(
-            comp::timer::TimerController::new(move |ctx, env, _rest_duration| {
+            comp::timer::Controller::new(move |ctx, env, _rest_duration| {
                 sound_sender.send(sound::Type::EndRest).ok();
 
                 ctx.submit_command(cmd::DEINIT_COMP.to(Target::Widget(ctx.widget_id())));
@@ -67,7 +67,7 @@ fn build_idle_timer(
             .with_duration(rest_duration_secs)
             .with_init_duration(env::BREAK_NOTIFIER_TIMER_DURATION),
         )
-        .controller(comp::deinit::DeinitController::default())
+        .controller(comp::deinit::Controller::default())
 }
 
 fn build_finish_btn(parent_widget_id: WidgetId) -> impl Widget<state::App> {

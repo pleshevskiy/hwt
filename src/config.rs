@@ -18,7 +18,7 @@ pub fn default() -> Env {
 }
 
 fn mins(m: f64) -> f64 {
-    return m * 60.0;
+    m * 60.0
 }
 
 #[derive(Deserialize)]
