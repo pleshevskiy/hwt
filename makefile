@@ -1,3 +1,4 @@
+
 build:
 	cargo build --release
 
@@ -10,6 +11,11 @@ uninstall:
 clean:
 	cargo clean
 
+release-linux:
+	strip target/release/hwt
+	mkdir -p release
+	tar -C ./target/release/ -czvf ./release/hwt-linux.tar.gz ./hwt
+
 release-mac:
 	strip target/release/hwt
 	mkdir -p release
@@ -19,7 +25,3 @@ release-win:
 	mkdir -p release
 	tar -C ./target/release/ -czvf ./release/hwt-win.tar.gz ./hwt.exe
 
-release-linux:
-	strip target/release/hwt
-	mkdir -p release
-	tar -C ./target/release/ -czvf ./release/hwt-linux.tar.gz ./hwt
